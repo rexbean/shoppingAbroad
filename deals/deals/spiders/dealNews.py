@@ -33,7 +33,6 @@ class dealNewsSpider(scrapy.Spider):
         #parseHot(r)
 
         #parseBlog(r)
-
         self.parseGoods(r)
 
     def executeJS(self):
@@ -41,10 +40,12 @@ class dealNewsSpider(scrapy.Spider):
         print('executing JS in '+url+'...')
         cmd = "phantomjs ./deals/getBody.js '%s'" % url
         print "cmd is",cmd
-
-        stdout, stderr =  subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr = subprocess.PIPE).communicate()
-        print(stderr)
-        r = HtmlResponse(url=url, body=stdout)
+        try:
+            stdout, stderr =  subprocess.Popen(cmd, shell=True, stdout=subprocess.PIPE, stderr = subprocess.PIPE).communicate()
+            print(stderr)
+            r = HtmlResponse(url=url, body=stdout)
+        except Exception as e:
+            print(e)
 
         return r
 
@@ -93,7 +94,7 @@ class dealNewsSpider(scrapy.Spider):
             yield goodsItem
 
     def parseGoods(self,r):
-
+        print('=================parseGoods==================')
         index = 0
         rootPath = '//*[@id="page-body"]/div/div/div/div[4]/div/div'
         for selector in r.xpath(rootPath):
@@ -155,10 +156,12 @@ class dealNewsSpider(scrapy.Spider):
                 else:
                     goodsItem['shipping'] = ''
 
-		# print goodsItem
+                index += 1
+                print(goodsItem)
+	        yield goodsItem
 
-		sql = "INSERT INTO `shopping`.`M_dealnews`r `title`, `link`, `picture`, `hotness`, `editor_recommond`, `posttime`, `description`, `price`, `shipping`) VALUES ( '" + goodsItem["title"].encode("ascii") + "', '" + goodsItem["link"].encode("ascii")+ "' , '"+ goodsItem["pic"].encode("ascii") +"', '" + goodsItem["hotness"] + "',' "+ str(goodsItem["editor"]) +"',' " + goodsItem["postTime"].encode("ascii") + "', 'fuck...',' "+goodsItem["price"].encode("ascii")+"',' "+goodsItem["shipping"].encode("ascii")+"');"
+#		sql = "INSERT INTO `shopping`.`M_dealnews`r `title`, `link`, `picture`, `hotness`, `editor_recommond`, `posttime`, `description`, `price`, `shipping`) VALUES ( '" + goodsItem["title"].encode("ascii") + "', '" + goodsItem["link"].encode("ascii")+ "' , '"+ goodsItem["pic"].encode("ascii") +"', '" + goodsItem["hotness"] + "',' "+ str(goodsItem["editor"]) +"',' " + goodsItem["postTime"].encode("ascii") + "', 'fuck...',' "+goodsItem["price"].encode("ascii")+"',' "+goodsItem["shipping"].encode("ascii")+"');"
 		# print sql
 		# db = PyMysql(sql)
 
-		index+=1
+		#index+=1

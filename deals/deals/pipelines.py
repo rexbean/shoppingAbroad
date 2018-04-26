@@ -6,25 +6,34 @@
 # See: https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 
 
+import pymysql
+from deals import settings
+
 class DBPipeline(object):
     def __init__(self):
-        # 连接数据库
-        self.connect = pymysql.connect(
-            host=settings.MYSQL_HOST,
-            db=settings.MYSQL_DBNAME,
-            user=settings.MYSQL_USER,
-            passwd=settings.MYSQL_PASSWD,
-            charset='utf8',
-            use_unicode=True)
-            # 通过cursor执行增删查改
-        self.cursor = self.connect.cursor();
+        # connect to database
+        try:
+            self.connect = pymysql.connect(
+                host=settings.MYSQL_HOST,
+                db=settings.MYSQL_DBNAME,
+                user=settings.MYSQL_USER,
+                passwd=settings.MYSQL_PASSWD,
+                charset='utf8',
+                use_unicode=True)
+            # cursor is used to do the operation of database
+            print('connected')
+            self.cursor = self.connect.cursor();
+        except Exception as e:
+            print(e)
 
     def process_item(self, item, spider):
+        print(item)
+        print('insert begin')
         try:
-            # 插入数据
+            # insert data
             self.cursor.execute(
                 """insert into M_dealnews(title, link, picture, hotness, editor_recommond, posttime, description, price, shipping)
-                value (%s, %s, %s, %s, %s, %s)""",
+                value (%s, %s, %s, %s, %s, %s, %s, %s, %s)""",
                 (item['title'],
                  item['link'],
                  item['pic'],
@@ -35,10 +44,10 @@ class DBPipeline(object):
                  item['price'],
                  item['shipping']))
 
-            # 提交sql语句
+            # commit
             self.connect.commit()
-
+            print('insert it')
         except Exception as error:
-            # 出现错误时打印错误日志
-            log(error)
+            # print error
+            print(error)
         return item

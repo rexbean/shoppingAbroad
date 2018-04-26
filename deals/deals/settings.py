@@ -14,10 +14,10 @@ BOT_NAME = 'deals'
 SPIDER_MODULES = ['deals.spiders']
 NEWSPIDER_MODULE = 'deals.spiders'
 
-MYSQL_HOST = 'localhost'
-MYSQL_DBNAME = 'shopping'
-MYSQL_USER = 'root'
-MYSQL_PASSWD = 'renchao'
+#MYSQL_HOST = 'localhost'
+#MYSQL_DBNAME = 'shopping'
+#MYSQL_USER = 'root'
+#MYSQL_PASSWD = 'renchao'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'deals (+http://www.yourdomain.com)'
@@ -69,7 +69,7 @@ ROBOTSTXT_OBEY = False
 # Configure item pipelines
 # See https://doc.scrapy.org/en/latest/topics/item-pipeline.html
 #ITEM_PIPELINES = {
-#    'deals.pipelines.DealsPipeline': 300,
+#    'deals.pipelines.DBPipeline': 300,
 #}
 
 # Enable and configure the AutoThrottle extension (disabled by default)
