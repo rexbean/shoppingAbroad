@@ -12,7 +12,7 @@ from scrapy.selector import Selector
 from scrapy.http import HtmlResponse
 from deals.items import GoodsItem
 from utility.utility import Utility
-from utility.request import PyRequest 
+from utility.mysql import PyMysql 
 
 class dealNewsSpider(scrapy.Spider):    
 
@@ -137,7 +137,7 @@ class dealNewsSpider(scrapy.Spider):
 
             if title is not None:
 
-                print('=================='+str(index)+'=====================')
+                # print('=================='+str(index)+'=====================')
                 goodsItem['title'] = title
                 goodsItem['postTime'] = publishedTime
                 goodsItem['pic'] = pic
@@ -154,13 +154,11 @@ class dealNewsSpider(scrapy.Spider):
                     goodsItem['shipping'] = shipping
                 else:
                     goodsItem['shipping'] = ''
-
-                #print(goodsItem)
 		
-		data = {'title':goodsItem['title'],'link':goodsItem['link'],'picture':goodsItem['pic'],'hotness':goodsItem['hotness'],'editor':goodsItem['editor'],'posttime':goodsItem['postTime'],'description':goodsItem['discription'],'price':goodsItem['price'],'shipping':goodsItem['shipping']}
-		print data
-		postReq = PyRequest("http://140.82.4.24:7001","/scrapy/dealnews/add",data)
-		re = postReq.doPost()
-		print re.text
-		# print postReq.doPost().text
-                index+=1
+		# print goodsItem
+		
+		sql = "INSERT INTO `shopping`.`M_dealnews`r `title`, `link`, `picture`, `hotness`, `editor_recommond`, `posttime`, `description`, `price`, `shipping`) VALUES ( '" + goodsItem["title"].encode("ascii") + "', '" + goodsItem["link"].encode("ascii")+ "' , '"+ goodsItem["pic"].encode("ascii") +"', '" + goodsItem["hotness"] + "',' "+ str(goodsItem["editor"]) +"',' " + goodsItem["postTime"].encode("ascii") + "', 'fuck...',' "+goodsItem["price"].encode("ascii")+"',' "+goodsItem["shipping"].encode("ascii")+"');"
+		# print sql
+		# db = PyMysql(sql)	
+                
+		index+=1
