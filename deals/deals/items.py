@@ -16,7 +16,7 @@ class GoodsItem(scrapy.Item):
     hotness = scrapy.Field()    # 关注热度 字符串
     editor = scrapy.Field()     # 编辑者推荐 boolean
     postTime = scrapy.Field()   # 发布时间（未解析） 字符串
-    discription = scrapy.Field()# 商品描述 字符串
+    description = scrapy.Field()# 商品描述 字符串
     price = scrapy.Field()      # 价格信息 字符串
     shipping = scrapy.Field()   # 运费 字符串
 

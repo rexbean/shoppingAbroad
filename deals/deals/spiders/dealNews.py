@@ -12,9 +12,9 @@ from scrapy.selector import Selector
 from scrapy.http import HtmlResponse
 from deals.items import GoodsItem
 from utility.utility import Utility
-from utility.mysql import PyMysql 
+from utility.mysql import PyMysql
 
-class dealNewsSpider(scrapy.Spider):    
+class dealNewsSpider(scrapy.Spider):
 
     name = "dealNews"
     urls = []
@@ -98,7 +98,7 @@ class dealNewsSpider(scrapy.Spider):
         rootPath = '//*[@id="page-body"]/div/div/div/div[4]/div/div'
         for selector in r.xpath(rootPath):
             goodsItem = GoodsItem()
-            discription = ''
+            description = ''
 
             titlePath   = './div[2]/div/h3/a//text()'
             pTimePath   = './div[2]/div/div/time/@datetime'
@@ -115,7 +115,7 @@ class dealNewsSpider(scrapy.Spider):
             title           = selector.xpath(titlePath).extract_first()
             publishedTime   = selector.xpath(pTimePath).extract_first()
             pic             = selector.xpath(picPath).extract_first()
-            discriptionList = selector.xpath(dPath).extract()
+            descriptionList = selector.xpath(dPath).extract()
             link            = selector.xpath(linkPath).extract_first()
 
             price           = selector.xpath(pricePath+'//text()').extract_first()
@@ -132,7 +132,7 @@ class dealNewsSpider(scrapy.Spider):
             else:
                 editor = False
 
-            discription = Utility.concatenateList(discriptionList)
+            description = Utility.concatenateList(descriptionList)
 
 
             if title is not None:
@@ -141,7 +141,7 @@ class dealNewsSpider(scrapy.Spider):
                 goodsItem['title'] = title
                 goodsItem['postTime'] = publishedTime
                 goodsItem['pic'] = pic
-                goodsItem['discription'] = discription
+                goodsItem['description'] = description
                 goodsItem['link'] = link
                 goodsItem['hotness'] = hotness
                 goodsItem['editor'] = editor
@@ -154,11 +154,11 @@ class dealNewsSpider(scrapy.Spider):
                     goodsItem['shipping'] = shipping
                 else:
                     goodsItem['shipping'] = ''
-		
+
 		# print goodsItem
-		
+
 		sql = "INSERT INTO `shopping`.`M_dealnews`r `title`, `link`, `picture`, `hotness`, `editor_recommond`, `posttime`, `description`, `price`, `shipping`) VALUES ( '" + goodsItem["title"].encode("ascii") + "', '" + goodsItem["link"].encode("ascii")+ "' , '"+ goodsItem["pic"].encode("ascii") +"', '" + goodsItem["hotness"] + "',' "+ str(goodsItem["editor"]) +"',' " + goodsItem["postTime"].encode("ascii") + "', 'fuck...',' "+goodsItem["price"].encode("ascii")+"',' "+goodsItem["shipping"].encode("ascii")+"');"
 		# print sql
-		# db = PyMysql(sql)	
-                
+		# db = PyMysql(sql)
+
 		index+=1

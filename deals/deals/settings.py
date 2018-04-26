@@ -14,6 +14,10 @@ BOT_NAME = 'deals'
 SPIDER_MODULES = ['deals.spiders']
 NEWSPIDER_MODULE = 'deals.spiders'
 
+MYSQL_HOST = 'localhost'
+MYSQL_DBNAME = 'shopping'
+MYSQL_USER = 'root'
+MYSQL_PASSWD = 'renchao'
 
 # Crawl responsibly by identifying yourself (and your website) on the user-agent
 #USER_AGENT = 'deals (+http://www.yourdomain.com)'
