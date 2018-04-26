@@ -12,7 +12,7 @@ from scrapy.selector import Selector
 from scrapy.http import HtmlResponse
 from deals.items import GoodsItem
 from utility.utility import Utility
-from utility.mysql import PyMysql
+# from utility.mysql import PyMysql
 
 class dealNewsSpider(scrapy.Spider):
 
@@ -33,7 +33,73 @@ class dealNewsSpider(scrapy.Spider):
         #parseHot(r)
 
         #parseBlog(r)
-        self.parseGoods(r)
+        print('=================parseGoods==================')
+        try:
+            index = 0
+            rootPath = '//*[@id="page-body"]/div/div/div/div[4]/div/div'
+            for selector in r.xpath(rootPath):
+                goodsItem = GoodsItem()
+                description = ''
+
+                titlePath   = './div[2]/div/h3/a//text()'
+                pTimePath   = './div[2]/div/div/time/@datetime'
+                picPath     = './div[1]/div/a[2]/img/@src'
+                linkPath    = './div[2]/div/a/@href'
+                dPath       = './div[3]/div//text()'
+                hotnessPath = './div[2]/div/div[@class="hotness info"]/img/@alt'
+                pricePath   = './div[2]/div/div[@class="content-call-out"]'
+                shipPath    = './small[@class ="content-sub-call-out"]//text()'
+                editorPath  = './div[1]/div[@title= "Editor\'s Choice"]//text()'
+
+
+
+                title           = selector.xpath(titlePath).extract_first()
+                publishedTime   = selector.xpath(pTimePath).extract_first()
+                pic             = selector.xpath(picPath).extract_first()
+                descriptionList = selector.xpath(dPath).extract()
+                link            = selector.xpath(linkPath).extract_first()
+
+                price           = selector.xpath(pricePath+'//text()').extract_first()
+                shipping        = selector.xpath(pricePath).xpath(shipPath).extract_first()
+
+                hotness = '0'
+                # for hotnewss, someone doesn't have
+                if len(selector.xpath(hotnessPath)) != 0:
+                    hotness = selector.xpath(hotnessPath).extract_first().split(':')[1].split('/')[0]
+
+                if len(selector.xpath(editorPath)) != 0:
+                    print(True)
+                    editor = True
+                else:
+                    editor = False
+
+                description = Utility.concatenateList(descriptionList)
+
+
+                if title is not None:
+
+                    print('=================='+str(index)+'=====================')
+                    goodsItem['title'] = title
+                    goodsItem['postTime'] = publishedTime
+                    goodsItem['pic'] = pic
+                    goodsItem['description'] = description
+                    goodsItem['link'] = link
+                    goodsItem['hotness'] = hotness
+                    goodsItem['editor'] = editor
+                    if price is not None:
+                        price = price.strip('\n').strip()
+                        goodsItem['price'] = price
+                    else:
+                        goodsItem['price'] = '$-1'
+                    if shipping is not None:
+                        goodsItem['shipping'] = shipping
+                    else:
+                        goodsItem['shipping'] = ''
+
+                    index += 1
+                    yield goodsItem
+        except Exception as e:
+            print(e)
 
     def executeJS(self):
         url = "https://www.dealnews.com/"
@@ -93,72 +159,6 @@ class dealNewsSpider(scrapy.Spider):
 
             yield goodsItem
 
-    def parseGoods(self,r):
-        print('=================parseGoods==================')
-        index = 0
-        rootPath = '//*[@id="page-body"]/div/div/div/div[4]/div/div'
-        for selector in r.xpath(rootPath):
-            goodsItem = GoodsItem()
-            description = ''
-
-            titlePath   = './div[2]/div/h3/a//text()'
-            pTimePath   = './div[2]/div/div/time/@datetime'
-            picPath     = './div[1]/div/a[2]/img/@src'
-            linkPath    = './div[2]/div/a/@href'
-            dPath       = './div[3]/div//text()'
-            hotnessPath = './div[2]/div/div[@class="hotness info"]/img/@alt'
-            pricePath   = './div[2]/div/div[@class="content-call-out"]'
-            shipPath    = './small[@class ="content-sub-call-out"]//text()'
-            editorPath  = './div[1]/div[@title= "Editor\'s Choice"]//text()'
-
-
-
-            title           = selector.xpath(titlePath).extract_first()
-            publishedTime   = selector.xpath(pTimePath).extract_first()
-            pic             = selector.xpath(picPath).extract_first()
-            descriptionList = selector.xpath(dPath).extract()
-            link            = selector.xpath(linkPath).extract_first()
-
-            price           = selector.xpath(pricePath+'//text()').extract_first()
-            shipping        = selector.xpath(pricePath).xpath(shipPath).extract_first()
-
-            hotness = '0'
-            # for hotnewss, someone doesn't have
-            if len(selector.xpath(hotnessPath)) != 0:
-                hotness = selector.xpath(hotnessPath).extract_first().split(':')[1].split('/')[0]
-
-            if len(selector.xpath(editorPath)) != 0:
-                print(True)
-                editor = True
-            else:
-                editor = False
-
-            description = Utility.concatenateList(descriptionList)
-
-
-            if title is not None:
-
-                # print('=================='+str(index)+'=====================')
-                goodsItem['title'] = title
-                goodsItem['postTime'] = publishedTime
-                goodsItem['pic'] = pic
-                goodsItem['description'] = description
-                goodsItem['link'] = link
-                goodsItem['hotness'] = hotness
-                goodsItem['editor'] = editor
-                if price is not None:
-                    price = price.strip('\n').strip()
-                    goodsItem['price'] = price
-                else:
-                    goodsItem['price'] = '$-1'
-                if shipping is not None:
-                    goodsItem['shipping'] = shipping
-                else:
-                    goodsItem['shipping'] = ''
-
-                index += 1
-                print(goodsItem)
-	        yield goodsItem
 
 #		sql = "INSERT INTO `shopping`.`M_dealnews`r `title`, `link`, `picture`, `hotness`, `editor_recommond`, `posttime`, `description`, `price`, `shipping`) VALUES ( '" + goodsItem["title"].encode("ascii") + "', '" + goodsItem["link"].encode("ascii")+ "' , '"+ goodsItem["pic"].encode("ascii") +"', '" + goodsItem["hotness"] + "',' "+ str(goodsItem["editor"]) +"',' " + goodsItem["postTime"].encode("ascii") + "', 'fuck...',' "+goodsItem["price"].encode("ascii")+"',' "+goodsItem["shipping"].encode("ascii")+"');"
 		# print sql

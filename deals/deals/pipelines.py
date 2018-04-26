@@ -27,7 +27,6 @@ class DBPipeline(object):
             print(e)
 
     def process_item(self, item, spider):
-        print(item)
         print('insert begin')
         try:
             # insert data
