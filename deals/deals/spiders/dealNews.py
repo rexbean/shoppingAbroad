@@ -36,8 +36,11 @@ class dealNewsSpider(scrapy.Spider):
         print('=================parseGoods==================')
         try:
             index = 0
-            rootPath = '//*[@id="page-body"]/div/div/div/div[4]/div/div'
+            #rootPath = '//*[@id="page-body"]/div/div/div/div[4]/div/div'
+            rootPath = '//div[@class="main"]/div'
+            #print(r.xpath(rootPath))
             for selector in r.xpath(rootPath):
+                #print(selector.extract())
                 goodsItem = GoodsItem()
                 description = ''
 
@@ -75,7 +78,7 @@ class dealNewsSpider(scrapy.Spider):
 
                 description = Utility.concatenateList(descriptionList)
 
-
+                print('title = ', title)
                 if title is not None:
 
                     print('=================='+str(index)+'=====================')
